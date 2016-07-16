@@ -1,3 +1,6 @@
+//old relic file, for posterity
+
+
 var primes = []
 var number = {
 	value : 1,
