@@ -1,7 +1,7 @@
 import datetime
 import sys
-from ..solutions import euler_7 as timed_script
-import euler_5_misha as timed_script2
+import euler_9 as timed_script
+import euler_2_misha as timed_script2
 
 
 def main():

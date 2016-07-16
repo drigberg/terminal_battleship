@@ -1,22 +1,15 @@
 def main():
+    #run-time: 0.004ms
     fibs = [1,2]
     even_sum = fibs[1]
-    breaker = False
-    while breaker == False:
-        for n in range(3):
-            fibs.append(fibs[-1] + fibs[-2])
-
-        if fibs[-1] <= 4e30:
-            print fibs[-1]
+    while fibs:
+        fibs.append(fibs[-1] + fibs[-2])
+        if fibs[-1] % 2 == 0:
             even_sum += fibs[-1]
         else:
-            breaker = True
-            print breaker
+            break
 
-        del fibs[0:3]
-    print even_sum
-    print fibs
-
+    return even_sum
 
 if __name__ == '__main__':
     main()

@@ -1,6 +1,6 @@
 def main():
     l = [1,2]
-    while l[-1] < 4e99:
+    while l[-1] < 4e6:
         z = l[-1]+l[-2]
         l.append(z)
     al = l[0:-1]

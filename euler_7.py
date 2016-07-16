@@ -2,6 +2,7 @@ import math
 def main():
     n = 1
     primes_count = 0
+
     while n:
         n += 1
         for a in range(2, int(math.floor(math.sqrt(n))) + 1):
@@ -9,7 +10,6 @@ def main():
                 break
         else:
             primes_count += 1
-            print primes_count
 
         if primes_count == 10001:
             break
