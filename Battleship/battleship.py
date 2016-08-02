@@ -9,7 +9,6 @@
 #       -enable multiplayer over network
 #       -enable messages in multiplayer
 
-
 import re
 from random import randint
 import os
@@ -76,40 +75,6 @@ class Battleship(object):
             turn += 1
             for player in self.players:
                 self.fire_torpedoes(player)
-
-    def fire_torpedoes(self, player):
-        if player.name == 'human':
-            coord = raw_input("Admiral! Where should we fire next? ")
-            print coord
-
-
-    def printBoard(self, player):
-        """Prints player's gameboard with left and right borders"""
-        print "******* %s ******* \n" % player.name
-
-        for n in range(0, 11):
-            if n == 0:
-                row = ["   "]
-                for col in self.col_headers:
-                    row.append(col)
-            else:
-                if n < 10:
-                    row = [" %s|" % n]
-                else:
-                    row = ["%s|" % n]
-                for col in self.col_headers:
-                    occupied = False
-                    active_cell = "".join([col, str(n)])
-                    for ship in player.ships:
-                        if active_cell in ship.coords:
-                            occupied = ship.coords[active_cell]
-                    if occupied:
-                        row.append(self.status_display[occupied])
-                    else:
-                        row.append(" ")
-                row.append("|")
-            print "".join(row)
-
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -186,6 +151,38 @@ class Battleship(object):
             if coord in ship.coords:
                 return ship.name
         return False
+
+    def fire_torpedoes(self, player):
+        if player.name == 'human':
+            coord = raw_input("Admiral! Where should we fire next? ")
+            print coord
+
+    def printBoard(self, player):
+        """Prints player's gameboard with left and right borders"""
+        print "******* %s ******* \n" % player.name
+
+        for n in range(0, 11):
+            if n == 0:
+                row = ["   "]
+                for col in self.col_headers:
+                    row.append(col)
+            else:
+                if n < 10:
+                    row = [" %s|" % n]
+                else:
+                    row = ["%s|" % n]
+                for col in self.col_headers:
+                    occupied = False
+                    active_cell = "".join([col, str(n)])
+                    for ship in player.ships:
+                        if active_cell in ship.coords:
+                            occupied = ship.coords[active_cell]
+                    if occupied:
+                        row.append(self.status_display[occupied])
+                    else:
+                        row.append(" ")
+                row.append("|")
+            print "".join(row)
 
     def animate(self, frame_list, loops):
         """takes in list of frames, iterates at hard-coded framerate"""
