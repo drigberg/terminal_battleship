@@ -21,6 +21,7 @@ class Ship(object):
             self.coords[coord] = "okay"
 
 class Battleship(object):
+    """all gameplay logic"""
     def __init__(self):
         self.players = (
             Player("human"),
@@ -43,155 +44,9 @@ class Battleship(object):
             'Hot damn!',
         ]
         self.status_display = {"hit" : "H", "okay" : "O"}
-        self.loading_screen = [
-            [
-                "________________________________________________",
-                "___XXX____X___XXXXX_XXXXX_X_____XXXX____________",
-                "___X__X__X_X____X_____X___X_____X_______________",
-                "___XXX__X_X_X___X_____X___X_____XXX_____________",
-                "___X__X_X___X___X_____X___X_____X_______________",
-                "___XXX__X___X___X_____X___XXXX__XXXX____________",
-                "________________________________________________",
-                "______________________OOO__O___O_OOOOO_OOOO_____",
-                "_____________________O_____O___O___O___O___O____",
-                "______________________OOO__OOOOO___O___OOOO_____",
-                "_________________________O_O___O___O___O________",
-                "______________________OOO__O___O_OOOOO_O________",
-                "________________________________________________",
-                "________________________________________________",
-                "______LOADING___________________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "____XXX____X___XXXXX_XXXXX_X_____XXXX___________",
-                "____X__X__X_X____X_____X___X_____X______________",
-                "____XXX__X_X_X___X_____X___X_____XXX____________",
-                "____X__X_X___X___X_____X___X_____X______________",
-                "____XXX__X___X___X_____X___XXXX__XXXX___________",
-                "________________________________________________",
-                "_____________________OOO__O___O_OOOOO_OOOO______",
-                "____________________O_____O___O___O___O___O_____",
-                "_____________________OOO__OOOOO___O___OOOO______",
-                "________________________O_O___O___O___O_________",
-                "_____________________OOO__O___O_OOOOO_O_________",
-                "________________________________________________",
-                "________________________________________________",
-                "_______LOADING__________________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "_____XXX____X___XXXXX_XXXXX_X_____XXXX__________",
-                "_____X__X__X_X____X_____X___X_____X_____________",
-                "_____XXX__X_X_X___X_____X___X_____XXX___________",
-                "_____X__X_X___X___X_____X___X_____X_____________",
-                "_____XXX__X___X___X_____X___XXXX__XXXX__________",
-                "________________________________________________",
-                "____________________OOO__O___O_OOOOO_OOOO_______",
-                "___________________O_____O___O___O___O___O______",
-                "____________________OOO__OOOOO___O___OOOO_______",
-                "_______________________O_O___O___O___O__________",
-                "____________________OOO__O___O_OOOOO_O__________",
-                "________________________________________________",
-                "________________________________________________",
-                "________LOADING_________________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "____XXX____X___XXXXX_XXXXX_X_____XXXX___________",
-                "____X__X__X_X____X_____X___X_____X______________",
-                "____XXX__X_X_X___X_____X___X_____XXX____________",
-                "____X__X_X___X___X_____X___X_____X______________",
-                "____XXX__X___X___X_____X___XXXX__XXXX___________",
-                "________________________________________________",
-                "_____________________OOO__O___O_OOOOO_OOOO______",
-                "____________________O_____O___O___O___O___O_____",
-                "_____________________OOO__OOOOO___O___OOOO______",
-                "________________________O_O___O___O___O_________",
-                "_____________________OOO__O___O_OOOOO_O_________",
-                "________________________________________________",
-                "________________________________________________",
-                "_________LOADING________________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "___XXX____X___XXXXX_XXXXX_X_____XXXX____________",
-                "___X__X__X_X____X_____X___X_____X_______________",
-                "___XXX__X_X_X___X_____X___X_____XXX_____________",
-                "___X__X_X___X___X_____X___X_____X_______________",
-                "___XXX__X___X___X_____X___XXXX__XXXX____________",
-                "________________________________________________",
-                "______________________OOO__O___O_OOOOO_OOOO_____",
-                "_____________________O_____O___O___O___O___O____",
-                "______________________OOO__OOOOO___O___OOOO_____",
-                "_________________________O_O___O___O___O________",
-                "______________________OOO__O___O_OOOOO_O________",
-                "________________________________________________",
-                "________________________________________________",
-                "__________LOADING_______________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "____XXX____X___XXXXX_XXXXX_X_____XXXX___________",
-                "____X__X__X_X____X_____X___X_____X______________",
-                "____XXX__X_X_X___X_____X___X_____XXX____________",
-                "____X__X_X___X___X_____X___X_____X______________",
-                "____XXX__X___X___X_____X___XXXX__XXXX___________",
-                "________________________________________________",
-                "_____________________OOO__O___O_OOOOO_OOOO______",
-                "____________________O_____O___O___O___O___O_____",
-                "_____________________OOO__OOOOO___O___OOOO______",
-                "________________________O_O___O___O___O_________",
-                "_____________________OOO__O___O_OOOOO_O_________",
-                "________________________________________________",
-                "________________________________________________",
-                "___________LOADING______________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "_____XXX____X___XXXXX_XXXXX_X_____XXXX__________",
-                "_____X__X__X_X____X_____X___X_____X_____________",
-                "_____XXX__X_X_X___X_____X___X_____XXX___________",
-                "_____X__X_X___X___X_____X___X_____X_____________",
-                "_____XXX__X___X___X_____X___XXXX__XXXX__________",
-                "________________________________________________",
-                "____________________OOO__O___O_OOOOO_OOOO_______",
-                "___________________O_____O___O___O___O___O______",
-                "____________________OOO__OOOOO___O___OOOO_______",
-                "_______________________O_O___O___O___O__________",
-                "____________________OOO__O___O_OOOOO_O__________",
-                "________________________________________________",
-                "________________________________________________",
-                "____________LOADING_____________________________",
-                "________________________________________________",
-            ],
-            [
-                "________________________________________________",
-                "____XXX____X___XXXXX_XXXXX_X_____XXXX___________",
-                "____X__X__X_X____X_____X___X_____X______________",
-                "____XXX__X_X_X___X_____X___X_____XXX____________",
-                "____X__X_X___X___X_____X___X_____X______________",
-                "____XXX__X___X___X_____X___XXXX__XXXX___________",
-                "________________________________________________",
-                "_____________________OOO__O___O_OOOOO_OOOO______",
-                "____________________O_____O___O___O___O___O_____",
-                "_____________________OOO__OOOOO___O___OOOO______",
-                "________________________O_O___O___O___O_________",
-                "_____________________OOO__O___O_OOOOO_O_________",
-                "________________________________________________",
-                "________________________________________________",
-                "_____________LOADING____________________________",
-                "________________________________________________",
-            ]
-        ]
 
     def main(self):
-        self.animate(self.loading_screen, 5)
+        self.animate(animations.loading_screen, 5)
         self.game_setup()
         self.gameplay()
 
@@ -203,6 +58,7 @@ class Battleship(object):
             self.printBoard(player)
 
     def gameplay(self):
+        """alternate turns between players until a player wins"""
         turn = 0
         while self.players[0].score < 21 and self.players[1].score < 21:
             turn += 1
@@ -217,7 +73,7 @@ class Battleship(object):
 
     def printBoard(self, player):
         """Prints player's gameboard with left and right borders"""
-        print "\n\n******* %s ******* \n" % player.name
+        print "******* %s ******* \n" % player.name
 
         for n in range(0, 11):
             if n == 0:
@@ -229,7 +85,7 @@ class Battleship(object):
                     row = [" %s|" % n]
                 else:
                     row = ["%s|" % n]
-                for col in  self.col_headers:
+                for col in self.col_headers:
                     occupied = False
                     active_cell = "".join([col, str(n)])
                     for ship in player.ships:
@@ -238,16 +94,19 @@ class Battleship(object):
                     if occupied:
                         row.append(self.status_display[occupied])
                     else:
-                        row.append("_")
+                        row.append(" ")
                 row.append("|")
             print "".join(row)
 
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
+        #adjust treatment of screen size to actually display messages
         placed = False
         while placed == False:
             if player.name == 'human':
+                self.printBoard(player)
+                print "\n"
                 start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
                 direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
             else:
@@ -260,7 +119,9 @@ class Battleship(object):
                 player.ships.append(new_ship)
                 placed = True
                 if player.name == 'human':
-                    print "%s Your %s in on coordinates %s." % (self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)], ship['name'], new_coords)
+                    # print "%s Your %s in on coordinates %s." % (self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)], ship['name'], new_coords)
+                    print self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)]
+
             else:
                 if player.name == 'human':
                     print new_coords
@@ -314,14 +175,16 @@ class Battleship(object):
                 return ship.name
         return False
 
-    def animate(self, frames, loops):
+    def animate(self, frame_list, loops):
+        """takes in list of frames, iterates at hard-coded framerate"""
         sys.stdout.write("\x1b[8;{rows};{cols}t".format(rows=17, cols=48))
         while loops is not None:
             loops -= 1
-            for n in range(len(frames)):
+            for n in range(len(frame_list)):
+                #clears screen once entire frame has been displayed
                 time.sleep(0.08)
                 os.system('cls' if os.name == 'nt' else 'clear')
-                for row in frames[n]:
+                for row in frame_list[n]:
                     print row
             if loops == 0:
                 for a in range(17):
@@ -330,7 +193,196 @@ class Battleship(object):
                 os.system('cls' if os.name == 'nt' else 'clear')
                 break
 
+class Animations(object):
+    #class containing all frames for animations
+    def __init__(self):
+        self.loading_screen = [
+            [
+                "                                                ",
+                "   XXX    X   XXXXX XXXXX X     XXXX      *     ",
+                "   X  X  X X    X     X   X     X               ",
+                "   XXX  X X X   X     X   X     XXX             ",
+                "   X  X X   X   X     X   X     X               ",
+                "   XXX  X   X   X     X   XXXX  XXXX            ",
+                "                                                ",
+                "     *                OOO  O   O OOOOO OOOO     ",
+                "                     O     O   O   O   O   O    ",
+                "                      OOO  OOOOO   O   OOOO     ",
+                "                         O O   O   O   O        ",
+                "            *         OOO  O   O OOOOO O        ",
+                "                                                ",
+                "                                                ",
+                "      LOADING                                   ",
+                "         *                              *       ",
+            ],
+            [
+                "                                                ",
+                " *  XXX    X   XXXXX XXXXX X     XXXX           ",
+                "    X  X  X X    X     X   X     X              ",
+                "    XXX  X X X   X     X   X     XXX            ",
+                "    X  X X   X   X     X   X     X              ",
+                "    XXX  X   X   X     X   XXXX  XXXX           ",
+                "                *                *              ",
+                "                     OOO  O   O OOOOO OOOO      ",
+                "             *      O     O   O   O   O   O     ",
+                "                     OOO  OOOOO   O   OOOO      ",
+                "  *                     O O   O   O   O         ",
+                "                     OOO  O   O OOOOO O         ",
+                "                                                ",
+                "                             *                  ",
+                "       LOADING                                  ",
+                "                               *                ",
+            ],
+            [
+                "        *                                       ",
+                "     XXX    X   XXXXX XXXXX X *   XXXX          ",
+                "     X  X  X X    X     X   X     X             ",
+                "     XXX  X X X   X     X   X     XXX           ",
+                "     X  X X   X   X     X   X     X    *        ",
+                "     XXX  X   X   X     X   XXXX  XXXX          ",
+                "                                                ",
+                "                    OOO  O   O OOOOO OOOO       ",
+                "    *              O     O   O   O   O   O      ",
+                "                    OOO  OOOOO   O   OOOO       ",
+                "                       O O   O   O   O     *    ",
+                "                    OOO  O   O OOOOO O          ",
+                "                                                ",
+                "                            *                   ",
+                "        LOADING                                 ",
+                "                                *               ",
+            ],
+            [
+                "         *                                      ",
+                "    XXX    X   XXXXX XXXXX X     XXXX           ",
+                "    X  X  X X    X     X   X     X              ",
+                "    XXX  X X X   X     X   X     XXX         *  ",
+                "    X  X X   X   X     X   X     X              ",
+                "    XXX  X   X   X     X   XXXX  XXXX           ",
+                "                                                ",
+                "      *              OOO  O   O OOOOO OOOO      ",
+                "                    O     O   O   O   O   O     ",
+                "                     OOO  OOOOO   O   OOOO      ",
+                "             *          O O   O   O   O         ",
+                "          *          OOO  O   O OOOOO O         ",
+                "  *                                             ",
+                "                                           *    ",
+                "         LOADING         *                      ",
+                "                                               ",
+            ],
+            [
+                "                                        (       ",
+                "   XXX    X   XXXXX XXXXX X     XXXX            ",
+                "   X  X  X X    X     X   X     X               ",
+                "   XXX  X X X   X     X   X     XXX             ",
+                "   X  X X   X   X     X   X     X         *     ",
+                "   XXX  X   X   X     X   XXXX  XXXX            ",
+                "    *                                           ",
+                "                  *   OOO  O   O OOOOO OOOO     ",
+                "                     O     O   O   O   O   O    ",
+                "         *            OOO  OOOOO   O   OOOO     ",
+                "                         O O   O   O   O        ",
+                "                      OOO  O   O OOOOO O        ",
+                "   *                                        *   ",
+                "                                 *              ",
+                "          LOADING           *                   ",
+                "                                                ",
+            ],
+            [
+                "                                                ",
+                "    XXX    X   XXXXX XXXXX X     XXXX       *   ",
+                "    X  X  X X    X     X   X     X              ",
+                "    XXX  X X X   X     X   X     XXX            ",
+                "    X  X X   X   X     X   X     X       *      ",
+                "    XXX  X   X   X     X   XXXX  XXXX           ",
+                "              *                                 ",
+                "                     OOO  O   O OOOOO OOOO      ",
+                "                    O     O   O   O   O   O     ",
+                "     *               OOO  OOOOO   O   OOOO      ",
+                "                        O O   O   O   O       * ",
+                "              *      OOO  O   O OOOOO O         ",
+                "                                                ",
+                "                                                ",
+                "           LOADING                 *            ",
+                "                                                ",
+            ],
+            [
+                "  *                  *                          ",
+                "     XXX    X   XXXXX XXXXX X     XXXX     *    ",
+                "     X  X  X X    X     X   X     X             ",
+                "     XXX  X X X   X     X   X     XXX           ",
+                "     X  X X   X   X     X   X     X             ",
+                "     XXX  X   X   X     X   XXXX  XXXX          ",
+                "                *                               ",
+                "                    OOO  O   O OOOOO OOOO       ",
+                "                   O     O   O   O   O   O      ",
+                "                    OOO  OOOOO   O   OOOO       ",
+                "                       O O   O   O   O          ",
+                "        *           OOO  O   O OOOOO O          ",
+                "                          *                     ",
+                "                                                ",
+                "            LOADING                *            ",
+                "       *                                        ",
+            ],
+            [
+                "             *                       *          ",
+                "    XXX    X   XXXXX XXXXX X     XXXX           ",
+                "    X  X  X X    X     X   X     X              ",
+                "    XXX  X X X   X     X   X     XXX            ",
+                "    X  X X   X   X     X   X     X       *      ",
+                "    XXX  X   X   X     X   XXXX  XXXX           ",
+                "   *                                            ",
+                "                     OOO  O   O OOOOO OOOO      ",
+                "              *     O     O   O   O   O   O     ",
+                "                     OOO  OOOOO   O   OOOO      ",
+                "                        O O   O   O   O         ",
+                "                     OOO  O   O OOOOO O         ",
+                "     *                                          ",
+                "                                  *             ",
+                "             LOADING                            ",
+                "                        *                       ",
+            ]
+        ]
+        self.explosion = [
+            [
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+            ],
+            [
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+                "                                                ",
+            ],
+        ]
+
 
 if __name__ == '__main__':
+    animations = Animations()
     b = Battleship()
     b.main()
