@@ -34,6 +34,7 @@ class Ship(object):
 
 def main():
     game_setup()
+    gameplay()
 
 def game_setup():
     """Establishes human and basic AI"""
@@ -54,20 +55,18 @@ def game_setup():
         for ship in ships:
             place_ship(player, ship)
         printBoard(player)
-        for active_ship in player.ships:
-            print "%s is on %s" % (active_ship.name, active_ship.coords)
 
-def printBlankBoard(player):
-    """Prints blank gameboard with left and right borders"""
-    print "\n\n******* %s ******* \n" % player.name
-    for col, row_dict in player.board.items():
-        row = []
-        for n in range(0, 12):
-            if n != 0 and n != 11:
-                row.append(player.board[col][n])
-            else:
-                row.append('|')
-        print "".join(row)
+def gameplay():
+    turn = 0
+    while players[0].score < 21 and players[1].score < 21:
+        turn += 1
+        for player in players:
+            fire_torpedoes(player)
+
+def fire_torpedoes(player):
+    if player.name == 'human':
+        coord = raw_input("")
+
 
 def printBoard(player):
     """Prints player's gameboard with left and right borders"""
