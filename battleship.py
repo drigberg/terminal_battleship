@@ -2,16 +2,6 @@ import re
 from random import randint
 
 #set global variables -- needs namespace
-col_headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-encouraging_statements = [
-    'Excellent!',
-    'Wow!',
-    'Muy bueno!!',
-    'Hai il tocco d\'oro!',
-    'Well, wouldja look\'t that!',
-    'Hot damn!',
-]
-status_display = {"hit" : "H", "okay" : "O"}
 
 class Player(object):
     """Player object -- initializes with blank board"""
@@ -42,7 +32,16 @@ class Battleship(object):
             {'name' : 'aircraft_carrier', 'length': 5},
             {'name' : 'patrol_boat', 'length': 2},
         ]
-
+        self.col_headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+        self.encouraging_statements = [
+            'Excellent!',
+            'Wow!',
+            'Muy bueno!!',
+            'Hai il tocco d\'oro!',
+            'Well, wouldja look\'t that!',
+            'Hot damn!',
+        ]
+        self.status_display = {"hit" : "H", "okay" : "O"}
     def main(self):
         self.game_setup()
         self.gameplay()
@@ -74,21 +73,21 @@ class Battleship(object):
         for n in range(0, 11):
             if n == 0:
                 row = ["   "]
-                for col in col_headers:
+                for col in self.col_headers:
                     row.append(col)
             else:
                 if n < 10:
                     row = [" %s|" % n]
                 else:
                     row = ["%s|" % n]
-                for col in col_headers:
+                for col in  self.col_headers:
                     occupied = False
                     active_cell = "".join([col, str(n)])
                     for ship in player.ships:
                         if active_cell in ship.coords:
                             occupied = ship.coords[active_cell]
                     if occupied:
-                        row.append(status_display[occupied])
+                        row.append(self.status_display[occupied])
                     else:
                         row.append("_")
                 row.append("|")
@@ -104,7 +103,7 @@ class Battleship(object):
                 direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
             else:
                 #if computer player, randomly places ship
-                start_coord = "".join([col_headers[randint(0, 9)], str(randint(1, 10))])
+                start_coord = "".join([self.col_headers[randint(0, 9)], str(randint(1, 10))])
                 direction = ["right", "down"][randint(0,1)]
             new_coords = self.find_new_coords(player, ship, start_coord, direction)
             if isinstance(new_coords, list):
@@ -112,7 +111,7 @@ class Battleship(object):
                 player.ships.append(new_ship)
                 placed = True
                 if player.name == 'human':
-                    print "%s Your %s in on coordinates %s." % (encouraging_statements[randint(0, len(encouraging_statements)-1)], ship['name'], new_coords)
+                    print "%s Your %s in on coordinates %s." % (self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)], ship['name'], new_coords)
             else:
                 if player.name == 'human':
                     print new_coords
@@ -123,8 +122,8 @@ class Battleship(object):
         if self.validate_coordinate(start_coord):
             coords = []
             if direction == 'right':
-                if col_headers.index(start_coord[0]) + ship['length'] <= 9:
-                    for col in col_headers[col_headers.index(start_coord[0]):col_headers.index(start_coord[0]) + ship['length']]:
+                if self.col_headers.index(start_coord[0]) + ship['length'] <= 9:
+                    for col in self.col_headers[self.col_headers.index(start_coord[0]):self.col_headers.index(start_coord[0]) + ship['length']]:
                         coord = "".join([col, start_coord[1:]])
                         coords.append(coord)
                 else:
@@ -154,7 +153,7 @@ class Battleship(object):
         #look up with this regex works for row 10
         coord_pattern = re.compile('\w\d')
         if coord_pattern.match(coord):
-            if coord[0] in col_headers:
+            if coord[0] in self.col_headers:
                 if int(coord[1:]) >= 1 and int(coord[1:]) <=10:
                     return True
         return False
