@@ -17,12 +17,7 @@ class Player(object):
     """Player object -- initializes with blank board"""
     def __init__(self, string):
         self.name = string
-        self.board = {}
         self.ships = []
-        for col in col_headers:
-            self.board[col] = {}
-            for row in range(1, 11):
-                self.board[col][row] = "_"
 
 class Ship(object):
     """Ship object -- initializes with occupied coordinates"""
