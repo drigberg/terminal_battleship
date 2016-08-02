@@ -1,3 +1,15 @@
+#To-Do:
+#       -complete torpedo logic
+#       -create logs of player + computer torpedoes; display accordingly on
+#           player's board and player's fog-of-war view of other board
+#       -finish explosion animation
+#       -animation for misses?
+#       -"computer is thinking" screen
+#       -feature: ships move one space every turn unless wrecked
+#       -enable multiplayer over network
+#       -enable messages in multiplayer
+
+
 import re
 from random import randint
 import os
