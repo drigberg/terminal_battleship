@@ -30,13 +30,7 @@ class Ship(object):
         self.coords = coords
 
 def main():
-    ready = raw_input('Ready to play? (y/n) ')
-    if ready == 'y':
-        game_setup()
-    elif ready == 'n':
-        print 'Oh. Fine, then.'
-    else:
-        print 'that wasn\'t even an option. you lose.'
+    game_setup()
 
 def game_setup():
     """Establishes human and basic AI"""
@@ -138,9 +132,7 @@ def validate_coordinate(coord):
 
 def collision_check(player, new_coord):
     """check for collisions during setup"""
-    print new_coord
     for ship in player.ships:
-        print ship.coords
         if new_coord in ship.coords:
             return ship.name
     return False
