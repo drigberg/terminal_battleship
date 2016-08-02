@@ -11,6 +11,7 @@ encouraging_statements = [
     'Well, wouldja look\'t that!',
     'Hot damn!',
 ]
+status_display = {"hit" : "H", "okay" : "O"}
 
 class Player(object):
     """Player object -- initializes with blank board"""
@@ -27,7 +28,9 @@ class Ship(object):
     """Ship object -- initializes with occupied coordinates"""
     def __init__(self, name, coords):
         self.name = name
-        self.coords = coords
+        self.coords = {}
+        for coord in coords:
+            self.coords[coord] = "okay"
 
 def main():
     game_setup()
@@ -54,8 +57,8 @@ def game_setup():
         for active_ship in player.ships:
             print "%s is on %s" % (active_ship.name, active_ship.coords)
 
-def printBoard(player):
-    """Prints gameboard with left and right borders"""
+def printBlankBoard(player):
+    """Prints blank gameboard with left and right borders"""
     print "\n\n******* %s ******* \n" % player.name
     for col, row_dict in player.board.items():
         row = []
@@ -65,6 +68,26 @@ def printBoard(player):
             else:
                 row.append('|')
         print "".join(row)
+
+def printBoard(player):
+    """Prints player's gameboard with left and right borders"""
+    print "\n\n******* %s ******* \n" % player.name
+
+    for n in range(1, 11):
+        row = ["|"]
+        for col in col_headers:
+            occupied = False
+            active_cell = "".join([col, str(n)])
+            for ship in player.ships:
+                if active_cell in ship.coords:
+                    occupied = ship.coords[active_cell]
+            if occupied:
+                row.append(status_display[occupied])
+            else:
+                row.append("_")
+        row.append("|")
+        print "".join(row)
+
 
 def place_ship(player, ship):
     """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -130,15 +153,12 @@ def validate_coordinate(coord):
                 return True
     return False
 
-def collision_check(player, new_coord):
+def collision_check(player, coord):
     """check for collisions during setup"""
     for ship in player.ships:
-        if new_coord in ship.coords:
+        if coord in ship.coords:
             return ship.name
     return False
-
-
-
 
 
 if __name__ == '__main__':
