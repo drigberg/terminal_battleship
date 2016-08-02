@@ -81,29 +81,33 @@ class Battleship(object):
         #adjust treatment of screen size to actually display messages
         placed = False
         while placed == False:
-            if player.name == 'human':
-                self.printBoard(player)
-                print "\n"
-                start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
-                direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
-            else:
-                #if computer player, randomly places ship
-                start_coord = "".join([self.col_headers[randint(0, 9)], str(randint(1, 10))])
-                direction = ["right", "down"][randint(0,1)]
-            new_coords = self.find_new_coords(player, ship, start_coord, direction)
-            if isinstance(new_coords, list):
-                new_ship = Ship(ship['name'], new_coords)
-                player.ships.append(new_ship)
+            start_coord_and_direction = self.get_coord_and_direction(player, ship)
+            new_coords_or_error = self.find_new_coords_or_give_error(player, ship, start_coord_and_direction['start_coord'], start_coord_and_direction['direction'])
+
+            #if valid coordinate and layout were given, place ship;
+            #otherwise, print error for humans and continue loop
+            if isinstance(new_coords_or_error, list):
+                player.ships.append(Ship(ship['name'], new_coords_or_error))
                 placed = True
                 if player.name == 'human':
-                    # print "%s Your %s in on coordinates %s." % (self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)], ship['name'], new_coords)
                     print self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)]
-
             else:
                 if player.name == 'human':
-                    print new_coords
+                    print new_coords_or_error
 
-    def find_new_coords(self, player, ship, start_coord, direction):
+    def get_coord_and_direction(self, player, ship):
+        if player.name == 'human':
+            self.printBoard(player)
+            print "\n"
+            start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
+            direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
+        else:
+            #if computer player, randomly places ship
+            start_coord = self.random_coordinate()
+            direction = ["right", "down"][randint(0,1)]
+        return {'start_coord': start_coord, 'direction': direction}
+
+    def find_new_coords_or_give_error(self, player, ship, start_coord, direction):
         """find matching coordinates on board given ship, starting coordinate, and direction"""
         #verify that the ship is on the board
         if self.validate_coordinate(start_coord):
@@ -152,10 +156,22 @@ class Battleship(object):
                 return ship.name
         return False
 
+    def random_coordinate(self):
+        return "".join([self.col_headers[randint(0, 9)], str(randint(1, 10))])
+
+    def other_player(self, player):
+        return self.players[self.players.index(player) - 1]
+
     def fire_torpedoes(self, player):
         if player.name == 'human':
             coord = raw_input("Admiral! Where should we fire next? ")
-            print coord
+            # if validate_coordinate(coord) is False:
+
+        else:
+            coord = self.random_coordinate()
+        for ship in self.other_player(player).ships:
+            if coord in ship.coords:
+                print "%s hit %s's %s!" % (player.name, self.other_player(player).name, ship.name)
 
     def printBoard(self, player):
         """Prints player's gameboard with left and right borders"""
