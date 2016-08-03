@@ -23,6 +23,7 @@ class Player(object):
         self.name = string
         self.ships = []
         self.score = 0
+        self.log = []
 
 class Ship(object):
     """Ship object -- initializes with occupied coordinates"""
@@ -31,7 +32,7 @@ class Ship(object):
         self.score = 0
         self.coords = {}
         for coord in coords:
-            self.coords[coord] = "okay"
+            self.coords[coord] = "undamaged"
 
 class Battleship(object):
     """all gameplay logic"""
@@ -58,11 +59,12 @@ class Battleship(object):
         ]
         self.status_display = {
             "hit" : "X",
-            "okay" : "O"
+            "undamaged" : "O",
+            "miss" : "O"
         }
 
     def main(self):
-        self.animate(animations.loading_screen, 4)
+        animations.animate(animations.loading_screen, 4)
         self.game_setup()
         self.gameplay()
 
@@ -182,41 +184,47 @@ class Battleship(object):
             #   print "Admiral, you already fired there!"
             for ship in self.other_player(player).ships:
                 if coord in ship.coords:
-                    if ship.coords[coord] == "okay":
-                        self.animate(animations.hit, 1)
+                    player.log.append({coord: "hit"})
+                    if ship.coords[coord] == "undamaged":
+                        animations.animate(animations.hit, 1)
                         ship.coords[coord] = "hit"
                         print "%s hit %s's %s!" % (player.name, self.other_player(player).name, ship.name)
                         for ship_segment in ship.coords:
-                            if ship.coords[ship_segment] == "okay":
+                            if ship.coords[ship_segment] == "undamaged":
                                 print "Healthy!"
                                 break
                         else:
                             player.score += len(ship.coords)
                             print "%s sunk!!!" % ship.name.title()
             else:
+                player.log.append({coord: "miss"})
                 shot_fired = True
                 print "Miss!!!!"
 
     def printBoards(self, player):
         """Prints player's gameboard with left and right borders"""
         player_board = self.generate_player_board(player)
-        # enemy_board = self.generate_enemy_board
+        enemy_board = self.generate_enemy_board
         print "******* %s ******* \n" % player.name
         for row in player_board:
             print row
 
     def generate_player_board(self, player):
+        """Prints a board with labeled axes and player's ships, with damage"""
         rows = []
         for n in range(0, 11):
+            #row 1 is column headers
             if n == 0:
                 row = ["   "]
                 for col in self.col_headers:
                     row.append(col)
             else:
+                #y axis has vertical line; needs special treatment for two-digit numbers
                 if n < 10:
                     row = [" %s|" % n]
                 else:
                     row = ["%s|" % n]
+                #check if cell is occupied by ship segement
                 for col in self.col_headers:
                     occupied = False
                     active_cell = "".join([col, str(n)])
@@ -229,29 +237,45 @@ class Battleship(object):
                         row.append(" ")
                 row.append("|")
             rows.append("".join(row))
-        for row in rows:
+        return self.normalize_rows(rows)
+
+    def generate_enemy_board(self, player):
+        """Prints a board with labeled axes and all locations of player's moves"""
+        rows = []
+        for n in range(0, 11):
+            #row 1 is column headers
+            if n == 0:
+                row = ["   "]
+                for col in self.col_headers:
+                    row.append(col)
+            else:
+                #y axis has vertical line; needs special treatment for two-digit numbers
+                if n < 10:
+                    row = [" %s|" % n]
+                else:
+                    row = ["%s|" % n]
+                #check if cell is occupied by ship segement
+                for col in self.col_headers:
+                    occupied = False
+                    active_cell = "".join([col, str(n)])
+                    for ship in player.ships:
+                        if active_cell in ship.coords:
+                            occupied = ship.coords[active_cell]
+                    if occupied:
+                        row.append(self.status_display[occupied])
+                    else:
+                        row.append(" ")
+                row.append("|")
+            rows.append("".join(row))
+        return self.normalize_rows(rows)
+
+    def normalize_rows(self, table):
+        """sets all rows in table to same length"""
+        for row in table:
             if len(row) < 22:
                 for n in range(22-len(row)):
                     row += " "
-        return rows
-
-    def animate(self, frame_list, loops):
-        """takes in list of frames, iterates at hard-coded framerate"""
-        sys.stdout.write("\x1b[8;{rows};{cols}t".format(rows=17, cols=48))
-        while loops is not None:
-            loops -= 1
-            for n in range(len(frame_list)):
-                #clears screen once entire frame has been displayed
-                time.sleep(0.08)
-                os.system('cls' if os.name == 'nt' else 'clear')
-                for row in frame_list[n]:
-                    print row
-            if loops == 0:
-                for a in range(17):
-                    time.sleep(0.08)
-                    print ""
-                os.system('cls' if os.name == 'nt' else 'clear')
-                break
+        return table
 
 if __name__ == '__main__':
     animations = Animations()

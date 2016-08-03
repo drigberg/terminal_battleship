@@ -1,5 +1,27 @@
+import sys
+import os
+import time
+
 class Animations(object):
     #class containing all frames for animations
+    def animate(self, frame_list, loops):
+        """takes in list of frames, iterates at hard-coded framerate"""
+        sys.stdout.write("\x1b[8;{rows};{cols}t".format(rows=17, cols=48))
+        while loops is not None:
+            loops -= 1
+            for n in range(len(frame_list)):
+                #clears screen once entire frame has been displayed
+                time.sleep(0.08)
+                os.system('cls' if os.name == 'nt' else 'clear')
+                for row in frame_list[n]:
+                    print row
+            if loops == 0:
+                for a in range(17):
+                    time.sleep(0.08)
+                    print ""
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
+
     def __init__(self):
         self.loading_screen = [
             [
