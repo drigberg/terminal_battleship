@@ -71,7 +71,7 @@ class Battleship(object):
         for player in self.players:
             for ship in self.ships:
                 self.place_ship(player, ship)
-            self.printBoard(player)
+            self.printBoards(player)
 
     def gameplay(self):
         """alternate turns between players until a player wins"""
@@ -80,7 +80,7 @@ class Battleship(object):
             turn += 1
             for player in self.players:
                 self.fire_torpedoes(player)
-                self.printBoard(player)
+                self.printBoards(player)
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -103,7 +103,7 @@ class Battleship(object):
 
     def get_coord_and_direction(self, player, ship):
         if player.name == 'human':
-            self.printBoard(player)
+            self.printBoards(player)
             print "\n"
             start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
             direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
@@ -197,10 +197,16 @@ class Battleship(object):
                 shot_fired = True
                 print "Miss!!!!"
 
-    def printBoard(self, player):
+    def printBoards(self, player):
         """Prints player's gameboard with left and right borders"""
+        player_board = self.generate_player_board(player)
+        # enemy_board = self.generate_enemy_board
         print "******* %s ******* \n" % player.name
+        for row in player_board:
+            print row
 
+    def generate_player_board(self, player):
+        rows = []
         for n in range(0, 11):
             if n == 0:
                 row = ["   "]
@@ -222,7 +228,12 @@ class Battleship(object):
                     else:
                         row.append(" ")
                 row.append("|")
-            print "".join(row)
+            rows.append("".join(row))
+        for row in rows:
+            if len(row) < 22:
+                for n in range(22-len(row)):
+                    row += " "
+        return rows
 
     def animate(self, frame_list, loops):
         """takes in list of frames, iterates at hard-coded framerate"""
