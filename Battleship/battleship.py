@@ -54,7 +54,10 @@ class Battleship(object):
             'Well, wouldja look\'t that!',
             'Hot damn!',
         ]
-        self.status_display = {"hit" : "H", "okay" : "O"}
+        self.status_display = {
+            "hit" : "X",
+            "okay" : "O"
+        }
 
     def main(self):
         self.animate(animations.loading_screen, 5)
@@ -71,10 +74,11 @@ class Battleship(object):
     def gameplay(self):
         """alternate turns between players until a player wins"""
         turn = 0
-        while self.players[0].score < 21 and self.players[1].score < 21:
+        while self.players[0].score < 17 and self.players[1].score < 17:
             turn += 1
             for player in self.players:
                 self.fire_torpedoes(player)
+                self.printBoard(player)
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -163,15 +167,33 @@ class Battleship(object):
         return self.players[self.players.index(player) - 1]
 
     def fire_torpedoes(self, player):
-        if player.name == 'human':
-            coord = raw_input("Admiral! Where should we fire next? ")
-            # if validate_coordinate(coord) is False:
+        shot_fired = False
+        while shot_fired == False:
+            if player.name == 'human':
+                coord = raw_input("Admiral! Where should we fire next? ")
+                # if validate_coordinate(coord) is False:
+            else:
+                coord = self.random_coordinate()
+            #if coord not in player.torpedo_log:
+            #   shot_fired = True
+            #else:
+            #   print "Admiral, you already fired there!"
+            for ship in self.other_player(player).ships:
+                if coord in ship.coords:
+                    if ship.coords[coord] == "okay":
+                        ship.coords[coord] = "hit"
+                        print "%s hit %s's %s!" % (player.name, self.other_player(player).name, ship.name)
+                        for ship_segment in ship.coords:
+                            if ship.coords[ship_segment] == "okay":
+                                print "Healthy!"
+                                break
+                        else:
+                            player.score += len(ship.coords)
+                            print "%s sunk!!!" % ship.name.title()
+            else:
+                shot_fired = True
+                print "Miss!!!!"
 
-        else:
-            coord = self.random_coordinate()
-        for ship in self.other_player(player).ships:
-            if coord in ship.coords:
-                print "%s hit %s's %s!" % (player.name, self.other_player(player).name, ship.name)
 
     def printBoard(self, player):
         """Prints player's gameboard with left and right borders"""
