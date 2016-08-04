@@ -1,5 +1,5 @@
 #Possible to-dos:
-#   -add message for where computer chose to fire
+#   -update: add message for where computer chose to fire
 #        -or: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
 #   -feature: ships move one space every turn unless wrecked
 #   -feature: enable multiplayer over network
@@ -7,6 +7,7 @@
 #   -update: better AI
 #   -update: display both players' final boards at end of game
 #   -update: distinguish between winner and loser at end of game
+#   -bug fix: get rid of text that flashes in between animations during firing phase
 
 import re
 from random import randint
@@ -81,7 +82,7 @@ class Battleship(object):
         while self.players[0].score < 17 and self.players[1].score < 17:
             turn += 1
             for player in self.players:
-                self.fire_torpedoes(player)
+                self.firing_phase(player)
             self.printBoards(self.players[0])
         else:
             print "SOMEONE WON!!!! THE GAME IS OVER!!!!!"
@@ -171,7 +172,7 @@ class Battleship(object):
     def other_player(self, player):
         return self.players[self.players.index(player) - 1]
 
-    def fire_torpedoes(self, player):
+    def firing_phase(self, player):
         """get coordinate that hasn't already been chosen--check for hit and log result"""
         shot_fired = False
         while shot_fired == False:
