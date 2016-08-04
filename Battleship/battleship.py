@@ -84,6 +84,8 @@ class Battleship(object):
             for player in self.players:
                 self.fire_torpedoes(player)
             self.printBoards(self.players[0])
+        else:
+            print "SOMEONE WON!!!! THE GAME IS OVER!!!!!"
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -176,30 +178,35 @@ class Battleship(object):
         while shot_fired == False:
             if player.type == 'human':
                 coord = raw_input("Admiral! Where should we fire next? ")
-                # if validate_coordinate(coord) is False:
             else:
+                animations.animate(animations.comp_is_thinking, 3)
                 coord = self.random_coordinate()
-            if coord in player.log:
-                print "***Admiral, you already fired there!***"
-            else:
-                shot_fired = True
-                for ship in self.other_player(player).ships:
-                    if coord in ship.coords:
-                        player.log[coord] = "hit"
-                        if ship.coords[coord] == "undamaged":
-                            animations.animate(animations.hit, 1)
-                            ship.coords[coord] = "hit"
-                            print "***%s hit %s's %s!***" % (player.type, self.other_player(player).type, ship.name.replace("_", " "))
-                            #check to see if ship is completely wrecked -- make own function
-                            for ship_segment in ship.coords:
-                                if ship.coords[ship_segment] == "undamaged":
-                                    break
-                            else:
-                                player.score += len(ship.coords)
-                                print "***%s sunk!!!***" % ship.name.title().replace("_", " ")
-                        break
+            if self.validate_coordinate(coord):
+                if coord in player.log:
+                    print "***Admiral, you already fired there!***"
                 else:
-                    player.log[coord] = "miss"
+                    shot_fired = True
+                    for ship in self.other_player(player).ships:
+                        if coord in ship.coords:
+                            player.log[coord] = "hit"
+                            if ship.coords[coord] == "undamaged":
+                                animations.animate(animations.hit, 1)
+                                ship.coords[coord] = "hit"
+                                print "***%s hit %s's %s!***" % (player.type, self.other_player(player).type, ship.name.replace("_", " "))
+                                #check to see if ship is completely wrecked -- make own function
+                                for ship_segment in ship.coords:
+                                    if ship.coords[ship_segment] == "undamaged":
+                                        break
+                                else:
+                                    player.score += len(ship.coords)
+                                    animations.animate(animations.sunk, 1)
+                            break
+                    else:
+                        animations.animate(animations.miss, 1)
+                        player.log[coord] = "miss"
+            else:
+                if player.type == 'human':
+                    print "***Invalid coordinate!***"
 
     def printBoards(self, player):
         """Prints player's gameboard with left and right borders"""
