@@ -20,7 +20,7 @@ from battleship_animations import Animations
 class Player(object):
     """Player object -- initializes with blank board"""
     def __init__(self, string):
-        self.name = string
+        self.type = string
         self.ships = []
         self.score = 0
         self.log = {}
@@ -73,7 +73,8 @@ class Battleship(object):
         for player in self.players:
             for ship in self.ships:
                 self.place_ship(player, ship)
-            self.printBoards(player)
+            if player.type == 'human':
+                self.printBoards(player)
 
     def gameplay(self):
         """alternate turns between players until a player wins"""
@@ -82,7 +83,7 @@ class Battleship(object):
             turn += 1
             for player in self.players:
                 self.fire_torpedoes(player)
-                self.printBoards(player)
+            self.printBoards(self.players[0])
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -97,16 +98,15 @@ class Battleship(object):
             if isinstance(new_coords_or_error, list):
                 player.ships.append(Ship(ship['name'], new_coords_or_error))
                 placed = True
-                if player.name == 'human':
+                if player.type == 'human':
                     print self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)]
             else:
-                if player.name == 'human':
+                if player.type == 'human':
                     print new_coords_or_error
 
     def get_coord_and_direction(self, player, ship):
-        if player.name == 'human':
+        if player.type == 'human':
             self.printBoards(player)
-            print "\n"
             start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
             direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
         else:
@@ -126,26 +126,26 @@ class Battleship(object):
                         coord = "".join([col, start_coord[1:]])
                         coords.append(coord)
                 else:
-                    return "Not on the board -- too far to the right!"
+                    return "***Not on the board!***"
             elif direction == 'down':
                 if int(start_coord[1:]) + ship['length'] - 1 <= 10:
                     for n in range(int(start_coord[1:]), int(start_coord[1:]) + ship['length']):
                         coord = "".join([start_coord[0], str(n)])
                         coords.append(coord)
                 else:
-                    return "Not on the board -- too far down!"
+                    return "***Not on the board!***"
             else:
-                return "Please type \"up\" or \"down\" as the direction!"
+                return "***Please type \"up\" or \"down\" as the direction!***"
 
             #check for overlap with other ships
             for coord in coords:
                 collision = self.collision_check(player, coord)
                 if collision:
-                    return "This overlaps with your %s!" % collision
+                    return "***This overlaps with your %s!***" % collision
             #return coordinates if all checks passed
             return coords
         else:
-            return "That is not a valid coordinate!!! It should look more like \"A1\" or \"J9\", \nand it should fit on columns A-J and rows 1-10."
+            return "***Invalid coordinate! It should look more like \"A1\" or \"J9\", \nand it should fit on columns A-J and rows 1-10.***"
 
     def validate_coordinate(self, coord):
         """ensure that player-given or random coordinate is on board"""
@@ -171,42 +171,41 @@ class Battleship(object):
         return self.players[self.players.index(player) - 1]
 
     def fire_torpedoes(self, player):
+        """get coordinate that hasn't already been chosen--check for hit and log result"""
         shot_fired = False
         while shot_fired == False:
-            if player.name == 'human':
+            if player.type == 'human':
                 coord = raw_input("Admiral! Where should we fire next? ")
                 # if validate_coordinate(coord) is False:
             else:
                 coord = self.random_coordinate()
-            #if coord not in player.torpedo_log:
-            #   shot_fired = True
-            #else:
-            #   print "Admiral, you already fired there!"
-            for ship in self.other_player(player).ships:
-                if coord in ship.coords:
-                    player.log[coord] = "hit"
-                    if ship.coords[coord] == "undamaged":
-                        animations.animate(animations.hit, 1)
-                        ship.coords[coord] = "hit"
-                        print "%s hit %s's %s!" % (player.name, self.other_player(player).name, ship.name)
-
-                        #check to see if ship is completely wrecked -- make own function
-                        for ship_segment in ship.coords:
-                            if ship.coords[ship_segment] == "undamaged":
-                                break
-                        else:
-                            player.score += len(ship.coords)
-                            print "%s sunk!!!" % ship.name.title()
+            if coord in player.log:
+                print "***Admiral, you already fired there!***"
             else:
-                player.log[coord] = "miss"
                 shot_fired = True
-                print "Miss!!!!"
+                for ship in self.other_player(player).ships:
+                    if coord in ship.coords:
+                        player.log[coord] = "hit"
+                        if ship.coords[coord] == "undamaged":
+                            animations.animate(animations.hit, 1)
+                            ship.coords[coord] = "hit"
+                            print "***%s hit %s's %s!***" % (player.type, self.other_player(player).type, ship.name.replace("_", " "))
+                            #check to see if ship is completely wrecked -- make own function
+                            for ship_segment in ship.coords:
+                                if ship.coords[ship_segment] == "undamaged":
+                                    break
+                            else:
+                                player.score += len(ship.coords)
+                                print "***%s sunk!!!***" % ship.name.title().replace("_", " ")
+                        break
+                else:
+                    player.log[coord] = "miss"
 
     def printBoards(self, player):
         """Prints player's gameboard with left and right borders"""
         player_board = self.generate_player_board(player)
         enemy_board = self.generate_enemy_board(player)
-        print "******* %s ******* \n" % player.name
+        print "\n****** you ******            ******* them *****\n"
         for n in range(len(enemy_board)):
             print "%s      %s" % (player_board[n], enemy_board[n])
 
@@ -238,12 +237,11 @@ class Battleship(object):
                         row.append(" ")
                 row.append("|")
             rows.append("".join(row))
-        return self.normalize_rows(rows)
+        return self.normalize_rows(rows, 24)
 
     def generate_enemy_board(self, player):
         """Prints a board with labeled axes and all locations of player's moves"""
         rows = []
-        print player.log
         for n in range(0, 11):
             #row 1 is column headers
             if n == 0:
@@ -265,14 +263,14 @@ class Battleship(object):
                         row.append(" ")
                 row.append("|")
             rows.append("".join(row))
-        return self.normalize_rows(rows)
+        return self.normalize_rows(rows, 16)
 
-    def normalize_rows(self, table):
+    def normalize_rows(self, table, length):
         """sets all rows in table to same length"""
-        for row in table:
-            if len(row) < 22:
-                for n in range(22-len(row)):
-                    row += " "
+        for n in range(len(table)):
+            if len(table[n]) < length:
+                for x in range(length - len(table[n])):
+                    table[n] += " "
         return table
 
 if __name__ == '__main__':
