@@ -1,15 +1,19 @@
 #Possible to-dos:
 #   -update: write more tests
 #   -update: refactor for more efficient testing
-#   -update: add message for where computer chose to fire
-#        -or: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
-#   -feature: ships move one space every turn unless wrecked
-#   -feature: enable multiplayer over network
-#       -enable messages in multiplayer
 #   -update: better AI
 #   -update: display both players' final boards at end of game
 #   -update: distinguish between winner and loser at end of game
+#
 #   -bug fix: get rid of text that flashes in between animations during firing phase
+#
+#   -feature: ships move one space every turn unless wrecked
+#   -feature: enable multiplayer over network
+#       -enable messages in multiplayer
+#
+#   -frills: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
+
+
 
 import re
 from random import randint
@@ -64,9 +68,10 @@ class Battleship(object):
             "undamaged" : "O",
             "miss" : "O"
         }
+        self.standard_frame_rate = 20
 
     def main(self):
-        animations.animate(animations.loading_screen, 4)
+        animations.animate(animations.loading_screen, 4, self.standard_frame_rate)
         self.game_setup()
         self.gameplay()
 
@@ -181,8 +186,11 @@ class Battleship(object):
             if player.type == 'human':
                 coord = raw_input("Admiral! Where should we fire next? ")
             else:
-                animations.animate(animations.comp_is_thinking, 3)
+                animations.animate(animations.comp_is_thinking, 3, self.standard_frame_rate)
                 coord = self.random_coordinate()
+                #display computer's move for time proportional to standard frame rate
+                print "Computer is firing at %s!" % coord
+                time.sleep(1.0/self.standard_frame_rate * 10)
             if self.validate_coordinate(coord):
                 if coord in player.log:
                     print "***Admiral, you already fired there!***"
@@ -192,7 +200,7 @@ class Battleship(object):
                         if coord in ship.coords:
                             player.log[coord] = "hit"
                             if ship.coords[coord] == "undamaged":
-                                animations.animate(animations.hit, 1)
+                                animations.animate(animations.hit, 1, self.standard_frame_rate)
                                 ship.coords[coord] = "hit"
                                 print "***%s hit %s's %s!***" % (player.type, self.other_player(player).type, ship.name.replace("_", " "))
                                 #check to see if ship is completely wrecked -- make own function
@@ -201,10 +209,10 @@ class Battleship(object):
                                         break
                                 else:
                                     player.score += len(ship.coords)
-                                    animations.animate(animations.sunk, 1)
+                                    animations.animate(animations.sunk, 1, self.standard_frame_rate)
                             break
                     else:
-                        animations.animate(animations.miss, 1)
+                        animations.animate(animations.miss, 1, self.standard_frame_rate)
                         player.log[coord] = "miss"
             else:
                 if player.type == 'human':
