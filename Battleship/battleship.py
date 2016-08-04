@@ -1,4 +1,6 @@
 #Possible to-dos:
+#   -update: write more tests
+#   -update: refactor for more efficient testing
 #   -update: add message for where computer chose to fire
 #        -or: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
 #   -feature: ships move one space every turn unless wrecked
