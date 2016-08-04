@@ -13,8 +13,6 @@
 #
 #   -frills: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
 
-
-
 import re
 from random import randint
 import os
@@ -69,30 +67,28 @@ class Battleship(object):
             "miss" : "O"
         }
         self.standard_frame_rate = 20
+        self.turn = 0
 
     def main(self):
-        animations.animate(animations.loading_screen, 4, self.standard_frame_rate)
         self.game_setup()
         self.gameplay()
 
     def game_setup(self):
-        """Establishes human and basic AI"""
+        """each player places their ships after the loading animation"""
+        animations.animate(animations.loading_screen, 4, self.standard_frame_rate)
         for player in self.players:
             for ship in self.ship_types:
                 self.place_ship(player, ship)
-            if player.type == 'human':
-                self.printBoards(player)
 
     def gameplay(self):
         """alternate turns between players until a player wins"""
-        turn = 0
         while self.players[0].score < 17 and self.players[1].score < 17:
-            turn += 1
+            self.turn += 1
+            self.printBoards(self.players[0])
             for player in self.players:
                 self.firing_phase(player)
-            self.printBoards(self.players[0])
         else:
-            print "SOMEONE WON!!!! THE GAME IS OVER!!!!!"
+            print "SOMEONE WON!!!! THE GAME IS OVER, AFTER %s TURNS!" % self.turns
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
@@ -114,6 +110,7 @@ class Battleship(object):
                     print ship_coords_or_error
 
     def get_coord_and_direction(self, player, ship):
+        """retrieve placement of ship"""
         if player.type == 'human':
             self.printBoards(player)
             start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
@@ -157,7 +154,7 @@ class Battleship(object):
             return "***Invalid coordinate! It should look more like \"A1\" or \"J9\", \nand it should fit on columns A-J and rows 1-10.***"
 
     def validate_coordinate(self, coord):
-        """ensure that player-given or random coordinate is on board"""
+        """ensure that coordinate is on board"""
         #look up with this regex works for row 10
         coord_pattern = re.compile('\w\d')
         if coord_pattern.match(coord):
@@ -174,13 +171,15 @@ class Battleship(object):
         return False
 
     def random_coordinate(self):
+        """generate random coordinate from A1 to J10"""
         return "".join([self.col_headers[randint(0, 9)], str(randint(1, 10))])
 
     def other_player(self, player):
+        """return opposite player"""
         return self.players[self.players.index(player) - 1]
 
     def firing_phase(self, player):
-        """get coordinate that hasn't already been chosen--check for hit and log result"""
+        """get coordinate that hasn't already been chosen by player--check for hit and log result"""
         shot_fired = False
         while shot_fired == False:
             if player.type == 'human':
@@ -188,7 +187,7 @@ class Battleship(object):
             else:
                 animations.animate(animations.comp_is_thinking, 3, self.standard_frame_rate)
                 coord = self.random_coordinate()
-                #display computer's move for time proportional to standard frame rate
+                #display computer's move for time proportional to standard frame rate; followed by hit or miss animation
                 print "Computer is firing at %s!" % coord
                 time.sleep(1.0/self.standard_frame_rate * 10)
             if self.validate_coordinate(coord):
@@ -219,15 +218,15 @@ class Battleship(object):
                     print "***Invalid coordinate!***"
 
     def printBoards(self, player):
-        """Prints player's gameboard with left and right borders"""
+        """Print player's gameboard with left and right borders"""
         player_board = self.generate_player_board(player)
-        enemy_board = self.generate_enemy_board(player)
+        log_board = self.generate_log_board(player)
         print "\n****** you ******            ******* them *****\n"
-        for n in range(len(enemy_board)):
-            print "%s      %s" % (player_board[n], enemy_board[n])
+        for n in range(len(log_board)):
+            print "%s      %s" % (player_board[n], log_board[n])
 
     def generate_player_board(self, player):
-        """Prints a board with labeled axes and player's ships, with damage"""
+        """Print a board with labeled axes and player's ships, with damage"""
         rows = []
         for n in range(0, 11):
             #row 1 is column headers
@@ -256,8 +255,8 @@ class Battleship(object):
             rows.append("".join(row))
         return self.normalize_rows(rows, 24)
 
-    def generate_enemy_board(self, player):
-        """Prints a board with labeled axes and all locations of player's moves"""
+    def generate_log_board(self, player):
+        """Print a board with labeled axes and all locations of player's moves"""
         rows = []
         for n in range(0, 11):
             #row 1 is column headers
