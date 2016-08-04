@@ -24,7 +24,7 @@ import sys
 from battleship_animations import Animations
 
 class Player(object):
-    """Player object -- initializes with blank board"""
+    """Player object -- contains list of ships, log of moves, and score based on destroyed ships"""
     def __init__(self, string):
         self.type = string
         self.ships = []
@@ -32,7 +32,7 @@ class Player(object):
         self.log = {}
 
 class Ship(object):
-    """Ship object -- initializes with occupied coordinates"""
+    """Ship object -- initializes with occupied, undamaged coordinates"""
     def __init__(self, name, coords):
         self.name = name
         self.score = 0
@@ -108,7 +108,7 @@ class Battleship(object):
                 player.ships.append(Ship(ship['name'], ship_coords_or_error))
                 placed = True
                 if player.type == 'human':
-                    print self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)]
+                    print "\n%s" % self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)]
             else:
                 if player.type == 'human':
                     print ship_coords_or_error
