@@ -23,7 +23,7 @@ class Player(object):
         self.name = string
         self.ships = []
         self.score = 0
-        self.log = []
+        self.log = {}
 
 class Ship(object):
     """Ship object -- initializes with occupied coordinates"""
@@ -184,30 +184,31 @@ class Battleship(object):
             #   print "Admiral, you already fired there!"
             for ship in self.other_player(player).ships:
                 if coord in ship.coords:
-                    player.log.append({coord: "hit"})
+                    player.log[coord] = "hit"
                     if ship.coords[coord] == "undamaged":
                         animations.animate(animations.hit, 1)
                         ship.coords[coord] = "hit"
                         print "%s hit %s's %s!" % (player.name, self.other_player(player).name, ship.name)
+
+                        #check to see if ship is completely wrecked -- make own function
                         for ship_segment in ship.coords:
                             if ship.coords[ship_segment] == "undamaged":
-                                print "Healthy!"
                                 break
                         else:
                             player.score += len(ship.coords)
                             print "%s sunk!!!" % ship.name.title()
             else:
-                player.log.append({coord: "miss"})
+                player.log[coord] = "miss"
                 shot_fired = True
                 print "Miss!!!!"
 
     def printBoards(self, player):
         """Prints player's gameboard with left and right borders"""
         player_board = self.generate_player_board(player)
-        enemy_board = self.generate_enemy_board
+        enemy_board = self.generate_enemy_board(player)
         print "******* %s ******* \n" % player.name
-        for row in player_board:
-            print row
+        for n in range(len(enemy_board)):
+            print "%s      %s" % (player_board[n], enemy_board[n])
 
     def generate_player_board(self, player):
         """Prints a board with labeled axes and player's ships, with damage"""
@@ -242,6 +243,7 @@ class Battleship(object):
     def generate_enemy_board(self, player):
         """Prints a board with labeled axes and all locations of player's moves"""
         rows = []
+        print player.log
         for n in range(0, 11):
             #row 1 is column headers
             if n == 0:
@@ -256,13 +258,9 @@ class Battleship(object):
                     row = ["%s|" % n]
                 #check if cell is occupied by ship segement
                 for col in self.col_headers:
-                    occupied = False
                     active_cell = "".join([col, str(n)])
-                    for ship in player.ships:
-                        if active_cell in ship.coords:
-                            occupied = ship.coords[active_cell]
-                    if occupied:
-                        row.append(self.status_display[occupied])
+                    if active_cell in player.log:
+                        row.append(self.status_display[player.log[active_cell]])
                     else:
                         row.append(" ")
                 row.append("|")
