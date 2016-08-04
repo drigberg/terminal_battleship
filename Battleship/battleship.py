@@ -1,15 +1,17 @@
 #Possible to-dos:
+#   -update: better AI
 #   -update: write more tests
 #   -update: refactor for more efficient testing
-#   -update: better AI
 #   -update: display both players' final boards at end of game
 #   -update: distinguish between winner and loser at end of game
+#   -update: query both players' names and display in messages
 #
-#   -bug fix: get rid of text that flashes in between animations during firing phase
-#
+#   -feature: allow for easy/hard difficulty, with different board sizes
 #   -feature: ships move one space every turn unless wrecked
 #   -feature: enable multiplayer over network
 #       -enable messages in multiplayer
+#
+#   -bug fix: get rid of text that flashes in between animations during firing phase
 #
 #   -frills: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
 
