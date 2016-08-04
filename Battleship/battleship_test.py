@@ -55,3 +55,17 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.collision_check(player, "I10"), "Ship_1")
         self.assertEqual(battleship.collision_check(player, "J10"), "Ship_2")
         self.assertEqual(battleship.collision_check(player, "B6"), False)
+
+    def test_ship_placement(self):
+        battleship = Battleship()
+        player = battleship.players[0]
+        player.ships.append(Ship("Ship_1", ["A1", "B1"]))
+        player.ships.append(Ship("Ship_2", ["A8", "B8"]))
+
+        aircraft_carrier = battleship.ship_types[4]
+        patrol_boat = battleship.ship_types[0]
+
+        self.assertEqual(battleship.find_ship_coords_or_give_error(player, patrol_boat, "A2", "right"), ["A2", "B2"])
+        self.assertEqual(battleship.find_ship_coords_or_give_error(player, aircraft_carrier, "A2", "down"), ["A2", "A3", "A4", "A5", "A6"])
+        self.assertEqual(battleship.find_ship_coords_or_give_error(player, patrol_boat, "A1", "right"), "***This overlaps with your Ship_1!***")
+        self.assertEqual(battleship.find_ship_coords_or_give_error(player, patrol_boat, "B8", "right"), "***This overlaps with your Ship_2!***")
