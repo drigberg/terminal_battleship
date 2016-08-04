@@ -1,13 +1,12 @@
-#To-Do:
-#       -complete torpedo logic
-#       -create logs of player + computer torpedoes; display accordingly on
-#           player's board and player's fog-of-war view of other board
-#       -finish explosion animation
-#       -animation for misses?
-#       -"computer is thinking" screen
-#       -feature: ships move one space every turn unless wrecked
-#       -enable multiplayer over network
+#Possible to-dos:
+#   -add message for where computer chose to fire
+#        -or: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
+#   -feature: ships move one space every turn unless wrecked
+#   -feature: enable multiplayer over network
 #       -enable messages in multiplayer
+#   -update: better AI
+#   -update: display both players' final boards at end of game
+#   -update: distinguish between winner and loser at end of game
 
 import re
 from random import randint
