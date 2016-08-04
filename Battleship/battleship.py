@@ -1,6 +1,9 @@
 #Possible to-dos:
 #   -update: better AI
 #   -update: write more tests
+#   -update: separate input and gameplay logic
+#   -update: show length of ships during placement
+#   -update: allow for lowercase letters in coordinates
 #   -update: refactor for more efficient testing
 #   -update: display both players' final boards at end of game
 #   -update: distinguish between winner and loser at end of game
@@ -10,8 +13,10 @@
 #   -feature: ships move one space every turn unless wrecked
 #   -feature: enable multiplayer over network
 #       -enable messages in multiplayer
+#   -feature: allow boat placement with arrow keys and interactive view
 #
 #   -bug fix: get rid of text that flashes in between animations during firing phase
+#   -bug fix: account for special characters in coordinate validation, add to tests
 #
 #   -frills: add standard animation where admiral shouts "FIRE TORPEDOES TO A2", etc
 
