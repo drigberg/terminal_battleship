@@ -40,7 +40,7 @@ class Battleship(object):
             Player("human"),
             Player("computer"),
         )
-        self.ships = [
+        self.ship_types = [
             {'name' : 'battleship', 'length': 4},
             {'name' : 'cruiser', 'length': 3},
             {'name' : 'sub', 'length': 3},
@@ -70,7 +70,7 @@ class Battleship(object):
     def game_setup(self):
         """Establishes human and basic AI"""
         for player in self.players:
-            for ship in self.ships:
+            for ship in self.ship_types:
                 self.place_ship(player, ship)
             if player.type == 'human':
                 self.printBoards(player)
@@ -91,19 +91,19 @@ class Battleship(object):
         #adjust treatment of screen size to actually display messages
         placed = False
         while placed == False:
-            start_coord_and_direction = self.get_coord_and_direction(player, ship)
-            new_coords_or_error = self.find_new_coords_or_give_error(player, ship, start_coord_and_direction['start_coord'], start_coord_and_direction['direction'])
+            coord_and_direction = self.get_coord_and_direction(player, ship)
+            ship_coords_or_error = self.find_ship_coords_or_give_error(player, ship, coord_and_direction['start_coord'], coord_and_direction['direction'])
 
             #if valid coordinate and layout were given, place ship;
             #otherwise, print error for humans and continue loop
-            if isinstance(new_coords_or_error, list):
-                player.ships.append(Ship(ship['name'], new_coords_or_error))
+            if isinstance(ship_coords_or_error, list):
+                player.ships.append(Ship(ship['name'], ship_coords_or_error))
                 placed = True
                 if player.type == 'human':
                     print self.encouraging_statements[randint(0, len(self.encouraging_statements)-1)]
             else:
                 if player.type == 'human':
-                    print new_coords_or_error
+                    print ship_coords_or_error
 
     def get_coord_and_direction(self, player, ship):
         if player.type == 'human':
@@ -116,7 +116,7 @@ class Battleship(object):
             direction = ["right", "down"][randint(0,1)]
         return {'start_coord': start_coord, 'direction': direction}
 
-    def find_new_coords_or_give_error(self, player, ship, start_coord, direction):
+    def find_ship_coords_or_give_error(self, player, ship, start_coord, direction):
         """find matching coordinates on board given ship, starting coordinate, and direction"""
         #verify that the ship is on the board
         if self.validate_coordinate(start_coord):
