@@ -44,11 +44,11 @@ class Battleship(object):
             Player("computer"),
         )
         self.ship_types = [
-            {'name' : 'battleship', 'length': 4},
+            {'name' : 'patrol_boat', 'length': 2},
             {'name' : 'cruiser', 'length': 3},
             {'name' : 'sub', 'length': 3},
+            {'name' : 'battleship', 'length': 4},
             {'name' : 'aircraft_carrier', 'length': 5},
-            {'name' : 'patrol_boat', 'length': 2},
         ]
         self.col_headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
         self.encouraging_statements = [
@@ -119,21 +119,21 @@ class Battleship(object):
             direction = ["right", "down"][randint(0,1)]
         return {'start_coord': start_coord, 'direction': direction}
 
-    def find_ship_coords_or_give_error(self, player, ship, start_coord, direction):
+    def find_ship_coords_or_give_error(self, player, new_ship, start_coord, direction):
         """find matching coordinates on board given ship, starting coordinate, and direction"""
         #verify that the ship is on the board
         if self.validate_coordinate(start_coord):
             coords = []
             if direction == 'right':
-                if self.col_headers.index(start_coord[0]) + ship['length'] <= 9:
-                    for col in self.col_headers[self.col_headers.index(start_coord[0]):self.col_headers.index(start_coord[0]) + ship['length']]:
+                if self.col_headers.index(start_coord[0]) + new_ship['length'] <= 9:
+                    for col in self.col_headers[self.col_headers.index(start_coord[0]):self.col_headers.index(start_coord[0]) + new_ship['length']]:
                         coord = "".join([col, start_coord[1:]])
                         coords.append(coord)
                 else:
                     return "***Not on the board!***"
             elif direction == 'down':
-                if int(start_coord[1:]) + ship['length'] - 1 <= 10:
-                    for n in range(int(start_coord[1:]), int(start_coord[1:]) + ship['length']):
+                if int(start_coord[1:]) + new_ship['length'] - 1 <= 10:
+                    for n in range(int(start_coord[1:]), int(start_coord[1:]) + new_ship['length']):
                         coord = "".join([start_coord[0], str(n)])
                         coords.append(coord)
                 else:
