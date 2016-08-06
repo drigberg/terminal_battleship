@@ -189,6 +189,7 @@ class Battleship(object):
 
     def firing_phase(self, player):
         """get coordinate that hasn't already been chosen by player--check for hit and log result"""
+        """computer switches to intelligent aiming if it gets a hit and hasn't sunk the ship yet"""
         if player.type == 'computer':
             animations.animate(animations.comp_is_thinking, 3, self.standard_frame_rate)
         shot_fired = False
@@ -238,14 +239,17 @@ class Battleship(object):
 
     def AI_firing(self, coords, player):
         """returns logical next guess when in hit_logic mode"""
+        """follows coordinates in a line--is only reliable if the ship it's hitting isn't touching other ships"""
 
+        #finds coordinates in each direction of set
         C_above = self.validate_coordinate(self.above_coord(coords))
         C_below = self.validate_coordinate(self.below_coord(coords))
         C_right = self.validate_coordinate(self.right_coord(coords))
         C_left = self.validate_coordinate(self.left_coord(coords))
 
         hit_choices = []
-        #compiles list of valid choices -- continues in a line if multiple hits
+
+        #compiles list of valid choices, following axis of ship
         if len(coords) > 1:
             if int(coords[0][1:]) != int(coords[-1][1:]):
                 for C in (C_above, C_below,):
@@ -260,6 +264,8 @@ class Battleship(object):
                 if C:
                     hit_choices.append(C)
 
+        #randomly chooses from set of choices and only selects options not in player.log
+        #if no valid options, turns off hit_logic mode
         choice = None
         while choice is None and len(hit_choices) > 0:
             choice = hit_choices[randint(0, len(hit_choices) - 1)]
