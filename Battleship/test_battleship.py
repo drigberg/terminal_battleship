@@ -3,6 +3,7 @@ from battleship import Battleship, Ship
 
 class BattleshipTestCase(unittest.TestCase):
     def test_board_functions(self):
+        """test board normalization"""
         battleship = Battleship()
         table = ["bat", "puppy", "lcdsoundsystem"]
         normalized_table = battleship.normalize_rows(table, 16)
@@ -11,6 +12,7 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(len(table[2]), 16)
 
     def test_other_player(self):
+        """test that other_player returns other player"""
         battleship = Battleship()
         player1 = battleship.players[0]
         player2 = battleship.players[1]
@@ -18,6 +20,7 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.other_player(player2), player1)
 
     def test_coordinate_validation(self):
+        """test that coordinates are accurately verified against board borders"""
         battleship = Battleship()
         dummy_coords = [
             "A1",
@@ -45,6 +48,7 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.validate_coordinate(dummy_coords[10]), False)
 
     def test_coordinate_manipulation(self):
+        """test that functions correctly find coordinates in each direction of those in lists"""
         battleship = Battleship()
         coord_set = [
             ["A1", "A2", "A3"],
@@ -80,6 +84,8 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.left_coord(coord_set[7]), "C4")
 
     def test_AI_logic(self):
+        """test that AI will select coordinate along axis of list (if multiple items)"""
+        """and not consider items in player.log"""
         battleship = Battleship()
         player = battleship.players[1]
         for coord in ["B6", "D4", "H6", "A9", "I1", "J9", "I10"]:
@@ -104,6 +110,7 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.AI_firing(coord_set[6], player), None)
 
     def test_collision_during_setup(self):
+        """test that collision_check returns old ship if new ship would overlap with it, or False if not"""
         battleship = Battleship()
         player = battleship.players[0]
         player.ships.append(Ship("Ship_1", ["A1", "I10"]))
@@ -116,8 +123,9 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.collision_check(player, "B6"), False)
 
     def test_ship_placement(self):
+        """test that coordinate and direction result in correct ship placement"""
         battleship = Battleship()
-        player = battleship.players[0]
+        player = battleship.players[0]n
         player.ships.append(Ship("Ship_1", ["A1", "B1"]))
         player.ships.append(Ship("Ship_2", ["A8", "B8"]))
 
