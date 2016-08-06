@@ -35,6 +35,7 @@ class Player(object):
         self.ships = []
         self.score = 0
         self.log = {}
+        self.hit_logic = None
 
 class Ship(object):
     """Ship object -- initializes with occupied, undamaged coordinates"""
@@ -91,7 +92,7 @@ class Battleship(object):
         """alternate turns between players until a player wins"""
         while self.players[0].score < 17 and self.players[1].score < 17:
             self.turn += 1
-            self.printBoards(self.players[0])
+            self.print_boards(self.players[0])
             for player in self.players:
                 self.firing_phase(player)
         else:
@@ -119,7 +120,7 @@ class Battleship(object):
     def get_coord_and_direction(self, player, ship):
         """retrieve placement of ship"""
         if player.type == 'human':
-            self.printBoards(player)
+            self.print_boards(player)
             start_coord = raw_input("%s coordinate closest to A1? " % ship['name'].title())
             direction = raw_input("%s's direction from starting coordinate? (right/down) " % ship['name'].title())
         else:
@@ -160,16 +161,6 @@ class Battleship(object):
         else:
             return "***Invalid coordinate! It should look more like \"A1\" or \"J9\", \nand it should fit on columns A-J and rows 1-10.***"
 
-    def validate_coordinate(self, coord):
-        """ensure that coordinate is on board"""
-        #look up with this regex works for row 10
-        coord_pattern = re.compile('\w\d')
-        if coord_pattern.match(coord):
-            if coord[0] in self.col_headers:
-                if int(coord[1:]) >= 1 and int(coord[1:]) <=10:
-                    return True
-        return False
-
     def collision_check(self, player, coord):
         """check for collisions during setup"""
         for ship in player.ships:
@@ -193,7 +184,10 @@ class Battleship(object):
                 coord = raw_input("Admiral! Where should we fire next? ")
             else:
                 animations.animate(animations.comp_is_thinking, 3, self.standard_frame_rate)
-                coord = self.random_coordinate()
+                if player.hit_logic is not None:
+                    coord = self.random_coordinate()
+                else:
+                    coord = self.AI_firing(player.hit_logic)
                 #display computer's move for time proportional to standard frame rate; followed by hit or miss animation
                 print "Computer is firing at %s!" % coord
                 time.sleep(1.0/self.standard_frame_rate * 13)
@@ -224,7 +218,55 @@ class Battleship(object):
                 if player.type == 'human':
                     print "***Invalid coordinate!***"
 
-    def printBoards(self, player):
+    def AI_firing(self, coords):
+        """returns logical next guess when in hit_logic mode"""
+        for C in (C1, C2, C3, C4,):
+            C = None
+
+        if len(coords) == 1:
+            coord = coords[0]
+            C1 = self.validate_coordinate("".join(coord[0], str(int(coord[1:]) - 1)))
+            C2 = self.validate_coordinate("".join(coord[0], str(int(coord[1:]) + 1)))
+            try:
+                C3 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) + 1], coord[1:]))
+            except IndexError:
+                pass
+            if col_headers.index(coord[0]) > 0:
+                C4 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) - 1], coord[1:]))
+            else:
+                pass
+        else:
+            if int(coords[0][1:]) != int(coords[-1][1:]):
+                C1 = self.validate_coordinate("".join(coords[0][0], str(min(int(coords[0][1:]) - 1), int(coords[-1][1:]) - 1)))
+                C2 = self.validate_coordinate("".join(coords[0][0], str(max(int(coord[0][1:]) + 1, int(coord[-1][1:]) + 1))))
+            else:
+                try:
+                    C3 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) + 1], coord[1:]))
+                except IndexError:
+                    pass
+                try:
+                    C4 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) - 1], coord[1:]))
+                except IndexError:
+                    pass
+
+        hit_choices = (above, below, right, left)
+        choice = None
+        while choice is not None:
+            choice = hit_choices[randint(0, len(hit_choices))]
+            if choice in player.log:
+                choice = None
+
+        return choice
+
+    def above_coord(self, coords):
+        """takes list of coord/coords in vertical line and finds coordinate above"""
+        return "".join([coords[0][0], str(min(int(coords[0][1:]) - 1, int(coords[-1][1:]) - 1))])
+
+    def below_coord(self, coords):
+        """takes list of coord/coords in vertical line and finds coordinate below"""
+        return "".join([coords[0][0], str(max(int(coords[0][1:]) + 1, int(coords[-1][1:]) + 1))])
+
+    def print_boards(self, player):
         """Print player's gameboard with left and right borders"""
         player_board = self.generate_player_board(player)
         log_board = self.generate_log_board(player)
