@@ -125,7 +125,7 @@ class BattleshipTestCase(unittest.TestCase):
     def test_ship_placement(self):
         """test that coordinate and direction result in correct ship placement"""
         battleship = Battleship()
-        player = battleship.players[0]n
+        player = battleship.players[0]
         player.ships.append(Ship("Ship_1", ["A1", "B1"]))
         player.ships.append(Ship("Ship_2", ["A8", "B8"]))
 
