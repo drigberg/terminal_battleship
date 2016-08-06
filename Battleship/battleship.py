@@ -35,7 +35,7 @@ class Player(object):
         self.ships = []
         self.score = 0
         self.log = {}
-        self.hit_logic = None
+        self.hit_logic = []
 
 class Ship(object):
     """Ship object -- initializes with occupied, undamaged coordinates"""
@@ -74,7 +74,7 @@ class Battleship(object):
             "undamaged" : "O",
             "miss" : "O"
         }
-        self.standard_frame_rate = 16
+        self.standard_frame_rate = 100
         self.turn = 0
 
     def main(self):
@@ -189,30 +189,34 @@ class Battleship(object):
 
     def firing_phase(self, player):
         """get coordinate that hasn't already been chosen by player--check for hit and log result"""
+        if player.type == 'computer':
+            animations.animate(animations.comp_is_thinking, 3, self.standard_frame_rate)
         shot_fired = False
         while shot_fired == False:
             if player.type == 'human':
                 coord = raw_input("Admiral! Where should we fire next? ")
             else:
-                animations.animate(animations.comp_is_thinking, 3, self.standard_frame_rate)
-                if player.hit_logic is not None:
+                if len(player.hit_logic) == 0:
                     coord = self.random_coordinate()
                 else:
-                    coord = self.AI_firing(player.hit_logic)
+                    coord = self.AI_firing(player.hit_logic, player)
                 #display computer's move for time proportional to standard frame rate; followed by hit or miss animation
                 print "Computer is firing at %s!" % coord
                 time.sleep(1.0/self.standard_frame_rate * 13)
             if self.validate_coordinate(coord):
                 if coord in player.log:
-                    print "***Admiral, you already fired there!***"
+                    if player.type == 'human':
+                        print "***Admiral, you already fired there!***"
                 else:
                     shot_fired = True
                     for ship in self.other_player(player).ships:
                         if coord in ship.coords:
                             player.log[coord] = "hit"
                             if ship.coords[coord] == "undamaged":
-                                animations.animate(animations.hit, 1, self.standard_frame_rate)
+                                if player.type == 'computer':
+                                    player.hit_logic.append(coord)
                                 ship.coords[coord] = "hit"
+                                animations.animate(animations.hit, 1, self.standard_frame_rate)
                                 print "***%s hit %s's %s!***" % (player.type, self.other_player(player).type, ship.name.replace("_", " "))
                                 #check to see if ship is completely wrecked -- make own function
                                 for ship_segment in ship.coords:
@@ -221,6 +225,8 @@ class Battleship(object):
                                 else:
                                     player.score += len(ship.coords)
                                     animations.animate(animations.sunk, 1, self.standard_frame_rate)
+                                    if player.type == 'computer':
+                                        player.hit_logic = []
                             break
                     else:
                         animations.animate(animations.miss, 1, self.standard_frame_rate)
@@ -260,7 +266,11 @@ class Battleship(object):
                 hit_choices.remove(choice)
                 choice = None
 
-        return choice
+        if choice is None:
+            player.hit_logic = []
+            return None
+        else:
+            return choice
 
     def above_coord(self, coords):
         """takes list of coord/coords and finds highest adjacent coordinate"""

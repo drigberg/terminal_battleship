@@ -82,7 +82,7 @@ class BattleshipTestCase(unittest.TestCase):
     def test_AI_logic(self):
         battleship = Battleship()
         player = battleship.players[1]
-        for coord in ["B6", "D4", "H6", "A9", "I1"]:
+        for coord in ["B6", "D4", "H6", "A9", "I1", "J9", "I10"]:
             player.log[coord] = "hit"
 
         coord_set = [
@@ -92,6 +92,7 @@ class BattleshipTestCase(unittest.TestCase):
             ["F6", "G6"],
             ["A10"],
             ["J1"],
+            ["J10"],
         ]
 
         self.assertEqual(battleship.AI_firing(coord_set[0], player), "A4")
@@ -100,7 +101,7 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.AI_firing(coord_set[3], player), "E6")
         self.assertEqual(battleship.AI_firing(coord_set[4], player), "B10")
         self.assertEqual(battleship.AI_firing(coord_set[5], player), "J2")
-
+        self.assertEqual(battleship.AI_firing(coord_set[6], player), None)
 
     def test_collision_during_setup(self):
         battleship = Battleship()
