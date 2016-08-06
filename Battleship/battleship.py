@@ -74,7 +74,7 @@ class Battleship(object):
             "undamaged" : "O",
             "miss" : "O"
         }
-        self.standard_frame_rate = 100
+        self.standard_frame_rate = 14
         self.turn = 0
 
     def main(self):
@@ -200,14 +200,15 @@ class Battleship(object):
                     coord = self.random_coordinate()
                 else:
                     coord = self.AI_firing(player.hit_logic, player)
-                #display computer's move for time proportional to standard frame rate; followed by hit or miss animation
-                print "Computer is firing at %s!" % coord
-                time.sleep(1.0/self.standard_frame_rate * 13)
             if self.validate_coordinate(coord):
                 if coord in player.log:
                     if player.type == 'human':
                         print "***Admiral, you already fired there!***"
                 else:
+                    if player.type == 'computer':
+                        print "Computer is firing at %s!" % coord
+                        #display computer's move for time proportional to standard frame rate; followed by hit or miss animation
+                        time.sleep(1.0/self.standard_frame_rate * 13)
                     shot_fired = True
                     for ship in self.other_player(player).ships:
                         if coord in ship.coords:
