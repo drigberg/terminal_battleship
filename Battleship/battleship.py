@@ -73,7 +73,7 @@ class Battleship(object):
             "undamaged" : "O",
             "miss" : "O"
         }
-        self.standard_frame_rate = 13
+        self.standard_frame_rate = 16
         self.turn = 0
 
     def main(self):
@@ -95,7 +95,7 @@ class Battleship(object):
             for player in self.players:
                 self.firing_phase(player)
         else:
-            print "SOMEONE WON!!!! THE GAME IS OVER, AFTER %s TURNS!" % self.turns
+            print "SOMEONE WON!!!! THE GAME IS OVER, AFTER %s TURNS!" % self.turn
 
     def place_ship(self, player, ship):
         """Retrieves starting coordinate and direction, verifies validity, passes occupied coordinates to new ship object"""
