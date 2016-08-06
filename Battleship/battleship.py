@@ -164,11 +164,12 @@ class Battleship(object):
     def validate_coordinate(self, coord):
         """ensure that coordinate is on board"""
         #look up with this regex works for row 10
-        coord_pattern = re.compile('\w\d')
-        if coord_pattern.match(coord):
-            if coord[0] in self.col_headers:
-                if int(coord[1:]) >= 1 and int(coord[1:]) <=10:
-                    return True
+        if type(coord) == str:
+            coord_pattern = re.compile('\w\d')
+            if coord_pattern.match(coord):
+                if coord[0] in self.col_headers:
+                    if int(coord[1:]) >= 1 and int(coord[1:]) <=10:
+                        return coord
         return False
 
     def collision_check(self, player, coord):
@@ -228,23 +229,35 @@ class Battleship(object):
                 if player.type == 'human':
                     print "***Invalid coordinate!***"
 
-    def AI_firing(self, coords):
+    def AI_firing(self, coords, player):
         """returns logical next guess when in hit_logic mode"""
+
         C_above = self.validate_coordinate(self.above_coord(coords))
         C_below = self.validate_coordinate(self.below_coord(coords))
         C_right = self.validate_coordinate(self.right_coord(coords))
         C_left = self.validate_coordinate(self.left_coord(coords))
 
         hit_choices = []
-        #compiles list of valid choices
-        for C in (C_above, C_below, C_right, C_left,):
-            if C:
-                hit_choices.append(C)
+        #compiles list of valid choices -- continues in a line if multiple hits
+        if len(coords) > 1:
+            if int(coords[0][1:]) != int(coords[-1][1:]):
+                for C in (C_above, C_below,):
+                    if C:
+                        hit_choices.append(C)
+            else:
+                for C in (C_right, C_left,):
+                    if C:
+                        hit_choices.append(C)
+        elif len(coords) == 1:
+            for C in (C_above, C_below, C_right, C_left,):
+                if C:
+                    hit_choices.append(C)
 
         choice = None
-        while choice is None:
-            choice = hit_choices[randint(0, len(hit_choices))]
+        while choice is None and len(hit_choices) > 0:
+            choice = hit_choices[randint(0, len(hit_choices) - 1)]
             if choice in player.log:
+                hit_choices.remove(choice)
                 choice = None
 
         return choice
@@ -280,10 +293,10 @@ class Battleship(object):
         left_set = []
         for coord in coords:
             left = self.col_headers.index(coord[0]) - 1
-            if left >= 1:
+            if left >= 0:
                 left_set.append(left)
         if left_set != []:
-            return "".join([self.col_headers[max(left_set)], coord[1:]])
+            return "".join([self.col_headers[min(left_set)], coord[1:]])
         else:
             return None
 
