@@ -44,6 +44,40 @@ class BattleshipTestCase(unittest.TestCase):
         self.assertEqual(battleship.validate_coordinate(dummy_coords[9]), False)
         self.assertEqual(battleship.validate_coordinate(dummy_coords[10]), False)
 
+    def test_coordinate_manipulation(self):
+        battleship = Battleship()
+        coord_set = [
+            ["A1", "A2", "A3"],
+            ["A3", "A4", "A5"],
+            ["A1"],
+            ["A10"],
+            ["A3"],
+            ["D3"],
+            ["J5"]
+        ]
+
+        #test below
+        self.assertEqual(battleship.below_coord(coord_set[0]), "A4")
+        self.assertEqual(battleship.below_coord(coord_set[1]), "A6")
+        self.assertEqual(battleship.below_coord(coord_set[2]), "A2")
+
+        #test above
+        self.assertEqual(battleship.below_coord(coord_set[3]), "A11")
+        self.assertEqual(battleship.above_coord(coord_set[0]), "A0")
+        self.assertEqual(battleship.above_coord(coord_set[1]), "A2")
+
+        #test right
+        self.assertEqual(battleship.right_coord(coord_set[2]), "B1")
+        self.assertEqual(battleship.right_coord(coord_set[5]), "E3")
+        self.assertEqual(battleship.right_coord(coord_set[6]), None)
+
+        #test left
+        self.assertEqual(battleship.left_coord(coord_set[2]), None)
+        self.assertEqual(battleship.left_coord(coord_set[5]), "C3")
+        self.assertEqual(battleship.left_coord(coord_set[6]), "I5")
+
+
+
     def test_collision_during_setup(self):
         battleship = Battleship()
         player = battleship.players[0]

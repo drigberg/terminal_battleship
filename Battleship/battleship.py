@@ -161,6 +161,16 @@ class Battleship(object):
         else:
             return "***Invalid coordinate! It should look more like \"A1\" or \"J9\", \nand it should fit on columns A-J and rows 1-10.***"
 
+    def validate_coordinate(self, coord):
+        """ensure that coordinate is on board"""
+        #look up with this regex works for row 10
+        coord_pattern = re.compile('\w\d')
+        if coord_pattern.match(coord):
+            if coord[0] in self.col_headers:
+                if int(coord[1:]) >= 1 and int(coord[1:]) <=10:
+                    return True
+        return False
+
     def collision_check(self, player, coord):
         """check for collisions during setup"""
         for ship in player.ships:
@@ -220,38 +230,19 @@ class Battleship(object):
 
     def AI_firing(self, coords):
         """returns logical next guess when in hit_logic mode"""
-        for C in (C1, C2, C3, C4,):
-            C = None
+        C_above = self.validate_coordinate(self.above_coord(coords))
+        C_below = self.validate_coordinate(self.below_coord(coords))
+        C_right = self.validate_coordinate(self.right_coord(coords))
+        C_left = self.validate_coordinate(self.left_coord(coords))
 
-        if len(coords) == 1:
-            coord = coords[0]
-            C1 = self.validate_coordinate("".join(coord[0], str(int(coord[1:]) - 1)))
-            C2 = self.validate_coordinate("".join(coord[0], str(int(coord[1:]) + 1)))
-            try:
-                C3 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) + 1], coord[1:]))
-            except IndexError:
-                pass
-            if col_headers.index(coord[0]) > 0:
-                C4 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) - 1], coord[1:]))
-            else:
-                pass
-        else:
-            if int(coords[0][1:]) != int(coords[-1][1:]):
-                C1 = self.validate_coordinate("".join(coords[0][0], str(min(int(coords[0][1:]) - 1), int(coords[-1][1:]) - 1)))
-                C2 = self.validate_coordinate("".join(coords[0][0], str(max(int(coord[0][1:]) + 1, int(coord[-1][1:]) + 1))))
-            else:
-                try:
-                    C3 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) + 1], coord[1:]))
-                except IndexError:
-                    pass
-                try:
-                    C4 = self.validate_coordinate("".join(col_headers[col_headers.index(coord[0]) - 1], coord[1:]))
-                except IndexError:
-                    pass
+        hit_choices = []
+        #compiles list of valid choices
+        for C in (C_above, C_below, C_right, C_left,):
+            if C:
+                hit_choices.append(C)
 
-        hit_choices = (above, below, right, left)
         choice = None
-        while choice is not None:
+        while choice is None:
             choice = hit_choices[randint(0, len(hit_choices))]
             if choice in player.log:
                 choice = None
@@ -259,12 +250,42 @@ class Battleship(object):
         return choice
 
     def above_coord(self, coords):
-        """takes list of coord/coords in vertical line and finds coordinate above"""
-        return "".join([coords[0][0], str(min(int(coords[0][1:]) - 1, int(coords[-1][1:]) - 1))])
+        """takes list of coord/coords and finds highest adjacent coordinate"""
+        above_set = []
+        for coord in coords:
+            above_set.append(int(coord[1:]) - 1)
+        return "".join([coords[0][0], str(min(above_set))])
 
     def below_coord(self, coords):
-        """takes list of coord/coords in vertical line and finds coordinate below"""
-        return "".join([coords[0][0], str(max(int(coords[0][1:]) + 1, int(coords[-1][1:]) + 1))])
+        """takes list of coord/coords and finds lowest adjacent coordinate"""
+        below_set = []
+        for coord in coords:
+            below_set.append(int(coord[1:]) + 1)
+        return "".join([coords[0][0], str(max(below_set))])
+
+    def right_coord(self, coords):
+        """takes list of coord/coords and finds adjacent coordinate farthest to the right"""
+        right_set = []
+        for coord in coords:
+            right = self.col_headers.index(coord[0]) + 1
+            if right < 10:
+                right_set.append(right)
+        if right_set != []:
+            return "".join([self.col_headers[max(right_set)], coord[1:]])
+        else:
+            return None
+
+    def left_coord(self, coords):
+        """takes list of coord/coords and finds adjacent coordinate farthest to the left"""
+        left_set = []
+        for coord in coords:
+            left = self.col_headers.index(coord[0]) - 1
+            if left >= 1:
+                left_set.append(left)
+        if left_set != []:
+            return "".join([self.col_headers[max(left_set)], coord[1:]])
+        else:
+            return None
 
     def print_boards(self, player):
         """Print player's gameboard with left and right borders"""
