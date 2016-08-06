@@ -149,7 +149,7 @@ class Battleship(object):
                 else:
                     return "***Not on the board!***"
             else:
-                return "***Please type \"up\" or \"down\" as the direction!***"
+                return "***Please type \"right\" or \"down\" as the direction!***"
 
             #check for overlap with other ships
             for coord in coords:
