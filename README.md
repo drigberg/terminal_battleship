@@ -1,3 +1,3 @@
-# games
+# Terminal Battleship
 
-Behold! All the games!
+Place your ships, fire at the enemy, and try to beat a computer in a game of chance!
